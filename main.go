@@ -3,12 +3,12 @@ package main
 import (
 	"backend/controllers"
 	"backend/models"
-	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
+// InitializeDatabase Function to initialize the database with some products
 func InitializeDatabase(db *gorm.DB) {
 	var count int64
 	db.Model(&models.Product{}).Count(&count)
