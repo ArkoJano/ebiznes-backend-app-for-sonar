@@ -1,14 +1,15 @@
 package controllers
 
 import (
-	"backend/models"
-	"errors"
+	"ebiznes-backend-app-for-sonar/models"
 	"github.com/labstack/echo/v4"
+	"errors"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
 
+// checkIfCartExistsAndReturn Function to check if a cart exists and return it.
 func checkIfCartExistsAndReturn(db *gorm.DB) (*models.Cart, error) {
 	var cart models.Cart
 	result := db.Where("id = ?", 1).First(&cart)

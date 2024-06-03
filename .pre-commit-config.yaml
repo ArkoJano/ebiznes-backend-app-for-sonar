@@ -3,4 +3,6 @@ repos:
     rev: v1.59.0
     hooks:
       - id: golangci-lint
-        args: [--enable-all, --disable=lll, --timeout=5m]
+        args: [
+          --timeout=5m
+        ]

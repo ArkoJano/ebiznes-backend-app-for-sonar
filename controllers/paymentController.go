@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"backend/models"
+	"ebiznes-backend-app-for-sonar/models"
 	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
@@ -121,9 +121,6 @@ func DeletePayment(db *gorm.DB) echo.HandlerFunc {
 		result := db.Delete(&models.Payment{}, id)
 		if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, "Error deleting payment")
-			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				return c.JSON(http.StatusNotFound, "Payment not found")
-			}
 		}
 
 		if result.RowsAffected == 0 {
