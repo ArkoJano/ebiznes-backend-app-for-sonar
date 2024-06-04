@@ -1,49 +1,40 @@
 package controllers
 
 import (
-	"ebiznes-backend-app-for-sonar/models"
-	"errors"
+	"ebiznes/models"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"net/http"
-	"strconv"
 )
 
 const invalidProductIDMessage = "Invalid product ID"
-const productNotFoundMessage = "Product not found"
 
 func GetProduct(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		id := c.Param("id")
-		productID, err := strconv.Atoi(id)
+		productID, err := parseID(c)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, invalidProductIDMessage)
 		}
 
 		var product models.Product
 		result := db.First(&product, productID)
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, productNotFoundMessage)
-		} else if result.Error != nil {
-			return c.JSON(http.StatusInternalServerError, result.Error)
+		if err := handleDBError(c, result, "Product"); err != nil {
+			return err
 		}
 
 		return c.JSON(http.StatusOK, product)
 	}
-
 }
 
 func GetProductsByCategory(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		categoryIDParam := c.Param("id")
-		categoryID, err := strconv.Atoi(categoryIDParam)
+		categoryID, err := parseID(c)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, "Invalid or missing category ID")
 		}
 
 		var products []models.Product
 		result := db.Scopes(models.ProductsByCategory(uint(categoryID))).Find(&products)
-
 		if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, "Error fetching products")
 		}
@@ -59,7 +50,8 @@ func AddProduct(db *gorm.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		if result := db.Create(&product); result.Error != nil {
+		result := db.Create(&product)
+		if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, result.Error)
 		}
 
@@ -69,25 +61,23 @@ func AddProduct(db *gorm.DB) echo.HandlerFunc {
 
 func UpdateProduct(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		id := c.Param("id")
-		productID, err := strconv.Atoi(id)
+		productID, err := parseID(c)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, invalidProductIDMessage)
 		}
 
 		var product models.Product
 		result := db.First(&product, productID)
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, productNotFoundMessage)
-		} else if result.Error != nil {
-			return c.JSON(http.StatusInternalServerError, result.Error)
+		if err := handleDBError(c, result, "Product"); err != nil {
+			return err
 		}
 
 		if err := c.Bind(&product); err != nil {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		if result := db.Save(&product); result.Error != nil {
+		result = db.Save(&product)
+		if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, result.Error)
 		}
 
@@ -97,21 +87,19 @@ func UpdateProduct(db *gorm.DB) echo.HandlerFunc {
 
 func DeleteProduct(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		id := c.Param("id")
-		productID, err := strconv.Atoi(id)
+		productID, err := parseID(c)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, invalidProductIDMessage)
 		}
 
 		var product models.Product
 		result := db.First(&product, productID)
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, productNotFoundMessage)
-		} else if result.Error != nil {
-			return c.JSON(http.StatusInternalServerError, result.Error)
+		if err := handleDBError(c, result, "Product"); err != nil {
+			return err
 		}
 
-		if result := db.Delete(&product); result.Error != nil {
+		result = db.Delete(&product)
+		if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, result.Error)
 		}
 
@@ -122,7 +110,8 @@ func DeleteProduct(db *gorm.DB) echo.HandlerFunc {
 func GetProducts(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var products []models.Product
-		if result := db.Find(&products); result.Error != nil {
+		result := db.Find(&products)
+		if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, result.Error)
 		}
 		return c.JSON(http.StatusOK, products)

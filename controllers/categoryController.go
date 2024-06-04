@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"ebiznes-backend-app-for-sonar/models"
+	"ebiznes/models"
 	"errors"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ebiznes-backend-app-for-sonar/controllers"
-	"ebiznes-backend-app-for-sonar/models"
+	"ebiznes/controllers"
+	"ebiznes/models"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/driver/sqlite"
