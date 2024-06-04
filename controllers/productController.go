@@ -9,18 +9,21 @@ import (
 	"strconv"
 )
 
+const invalidProductIDMessage = "Invalid product ID"
+const productNotFoundMessage = "Product not found"
+
 func GetProduct(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id")
 		productID, err := strconv.Atoi(id)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid product ID")
+			return c.JSON(http.StatusBadRequest, invalidProductIDMessage)
 		}
 
 		var product models.Product
 		result := db.First(&product, productID)
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, "Product not found")
+			return c.JSON(http.StatusNotFound, productNotFoundMessage)
 		} else if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, result.Error)
 		}
@@ -69,13 +72,13 @@ func UpdateProduct(db *gorm.DB) echo.HandlerFunc {
 		id := c.Param("id")
 		productID, err := strconv.Atoi(id)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid product ID")
+			return c.JSON(http.StatusBadRequest, invalidProductIDMessage)
 		}
 
 		var product models.Product
 		result := db.First(&product, productID)
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, "Product not found")
+			return c.JSON(http.StatusNotFound, productNotFoundMessage)
 		} else if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, result.Error)
 		}
@@ -97,13 +100,13 @@ func DeleteProduct(db *gorm.DB) echo.HandlerFunc {
 		id := c.Param("id")
 		productID, err := strconv.Atoi(id)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid product ID")
+			return c.JSON(http.StatusBadRequest, invalidProductIDMessage)
 		}
 
 		var product models.Product
 		result := db.First(&product, productID)
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, "Product not found")
+			return c.JSON(http.StatusNotFound, productNotFoundMessage)
 		} else if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, result.Error)
 		}

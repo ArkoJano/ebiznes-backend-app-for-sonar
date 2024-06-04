@@ -49,12 +49,14 @@ func main() {
 
 	InitializeDatabase(db)
 
+	const productsIdEndpoint = "/products/:id"
+
 	e.GET("/", controllers.Home)
 	e.GET("/products", controllers.GetProducts(db))
-	e.GET("/products/:id", controllers.GetProduct(db))
+	e.GET(productsIdEndpoint, controllers.GetProduct(db))
+	e.PUT(productsIdEndpoint, controllers.UpdateProduct(db))
+	e.DELETE(productsIdEndpoint, controllers.DeleteProduct(db))
 	e.POST("/products", controllers.AddProduct(db))
-	e.PUT("/products/:id", controllers.UpdateProduct(db))
-	e.DELETE("/products/:id", controllers.DeleteProduct(db))
 	e.GET("/products/category/:id", controllers.GetProductsByCategory(db))
 
 	e.GET("/cart", controllers.GetCartItems(db))

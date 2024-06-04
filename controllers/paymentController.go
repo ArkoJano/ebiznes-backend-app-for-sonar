@@ -10,6 +10,9 @@ import (
 	"strconv"
 )
 
+const invalidIDMessage = "Invalid ID"
+const paymentNotFoundMessage = "Payment not found"
+
 func ListAllPayments(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var payments []models.Payment
@@ -44,13 +47,13 @@ func GetPayment(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid ID")
+			return c.JSON(http.StatusBadRequest, invalidIDMessage)
 		}
 
 		var payment models.Payment
 		result := db.First(&payment, id)
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, "Payment not found")
+			return c.JSON(http.StatusNotFound, paymentNotFoundMessage)
 		} else if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, "Error retrieving payment")
 		}
@@ -83,13 +86,13 @@ func UpdatePayment(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid ID")
+			return c.JSON(http.StatusBadRequest, invalidIDMessage)
 		}
 
 		var payment models.Payment
 		result := db.First(&payment, id)
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, "Payment not found")
+			return c.JSON(http.StatusNotFound, paymentNotFoundMessage)
 		} else if result.Error != nil {
 			return c.JSON(http.StatusInternalServerError, "Error retrieving payment")
 		}
@@ -115,7 +118,7 @@ func DeletePayment(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid ID")
+			return c.JSON(http.StatusBadRequest, invalidIDMessage)
 		}
 
 		result := db.Delete(&models.Payment{}, id)
@@ -124,7 +127,7 @@ func DeletePayment(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		if result.RowsAffected == 0 {
-			return c.JSON(http.StatusNotFound, "Payment not found")
+			return c.JSON(http.StatusNotFound, paymentNotFoundMessage)
 		}
 
 		return c.JSON(http.StatusOK, "Payment deleted")
